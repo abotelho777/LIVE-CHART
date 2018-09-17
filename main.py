@@ -4,6 +4,7 @@ from time import sleep
 # from flask import Flask, request, session, g, redirect, \
 #      render_template
 import os
+import sys
 
 SQL_FOLDER = 'resources/SQL/'
 # app = Flask(__name__)
@@ -71,12 +72,28 @@ if __name__ == '__main__':
 
     action_history = get_all_actions(db, date, class_section)
 
-    increment = 1
+    increment = 3
     speed = 30
+
+    output_str = str(seconds_to_time(db,time_s,date))
+    sys.stdout.write(output_str)
+    sys.stdout.flush()
+    old_str = output_str
+
     while True:
+        sys.stdout.write('\r' + (' ' * len(old_str)) + '\r')
+        sys.stdout.flush()
+        output_str = str(seconds_to_time(db, time_s, date))
+        sys.stdout.write(output_str)
+        sys.stdout.flush()
+        old_str = output_str
+
         res, headers = get_recent_actions(db, date, class_section, time_s, increment, source=action_history)
-        for i in res:
-            msg = 'user {} :: {}'.format(i[3],i[8])
-            print('{}: {}'.format(str(i[16]), msg))
+        if len(res) > 0:
+            sys.stdout.write('\r' + (' ' * len(old_str)) + '\r')
+            sys.stdout.flush()
+            for i in res:
+                msg = 'user {} :: {}'.format(i[3],i[8])
+                print('{}: {}'.format(str(i[16]), msg))
         time_s += increment
         sleep(increment / speed)

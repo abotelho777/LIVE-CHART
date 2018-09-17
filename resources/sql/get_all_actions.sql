@@ -45,8 +45,9 @@ WHERE user_id IN (SELECT user_id FROM student_user_classes)
 AND assignment_id IN (SELECT id FROM class_assignments 
 	WHERE student_class_id IN (SELECT student_class_id FROM student_user_classes
 	))
-AND CASE WHEN end_time IS NOT NULL THEN start_time <= date_trunc('day',timestamp :date) AND end_time > date_trunc('day',timestamp :date)
-ELSE start_time <= date_trunc('day',timestamp :date) AND last_worked_on > date_trunc('day',timestamp :date) END)
+AND CASE WHEN end_time IS NOT NULL THEN date_trunc('day',start_time) <= date_trunc('day',timestamp :date) AND date_trunc('day',end_time) >= date_trunc('day',timestamp :date)
+	 WHEN last_worked_on IS NOT NULL THEN date_trunc('day',start_time) <= date_trunc('day',timestamp :date) AND date_trunc('day',last_worked_on) >= date_trunc('day',timestamp :date)
+	 ELSE date_trunc('day',start_time) <= date_trunc('day',timestamp :date) END)
 
 --------------------
 ) AS plog
